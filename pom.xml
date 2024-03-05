@@ -6,7 +6,8 @@
 
 	<modules>
 		<module>core</module>
-	</modules>
+        <module>product</module>
+    </modules>
 
 	<groupId>ru.stepup.spring.coins</groupId>
 	<artifactId>stepup-spring-coins</artifactId>
