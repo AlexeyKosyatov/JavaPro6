@@ -31,7 +31,7 @@ public class IntegrationsConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "productIntegrationRestTemplate")
+    //@ConditionalOnMissingBean(name = "productIntegrationRestTemplate")
     public ProductIntegration productIntegration(
             ProductProperties productProperties,
             RestTemplateResponseErrorHandler restTemplateResponseErrorHandler

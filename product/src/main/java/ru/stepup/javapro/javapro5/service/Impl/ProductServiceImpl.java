@@ -8,6 +8,7 @@ import ru.stepup.javapro.javapro5.repository.ProductDao;
 import ru.stepup.javapro.javapro5.service.ProductService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ProductServiceImpl implements ProductService {
@@ -70,14 +71,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductEntity selectEntityById(Long id) {
-        var productEntity = productDao.selectById(id);
-        if(productEntity != null) {
-            return productEntity;
-        }
-        else {
-            throw new RuntimeException("Продукт не найден id = " + id);
-        }
+    public Optional<ProductEntity> selectEntityById(Long id) {
+        return Optional.of(productDao.selectById(id));
     }
 
     @Override

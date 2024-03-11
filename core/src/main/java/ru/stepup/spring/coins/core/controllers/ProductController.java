@@ -1,5 +1,6 @@
 package ru.stepup.spring.coins.core.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,8 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("/products")
-    public List<ProductDto> execute(@RequestHeader Long userId) {
+    @GetMapping("/list")
+    public ResponseEntity<List<ProductDto>> execute(@RequestHeader Long userId) {
         return productService.products(userId);
     }
 }

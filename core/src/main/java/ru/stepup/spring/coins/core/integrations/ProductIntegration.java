@@ -1,10 +1,11 @@
 package ru.stepup.spring.coins.core.integrations;
 
+import org.springframework.http.ResponseEntity;
 import ru.stepup.spring.coins.core.integrations.dtos.ProductDto;
 
 import java.util.List;
 
 public interface ProductIntegration {
-    List<ProductDto> products(Long userId);
+    ResponseEntity<List<ProductDto>> products(Long userId);
     ProductDto product(Long id);
 }

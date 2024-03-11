@@ -16,7 +16,9 @@ import ru.stepup.spring.coins.core.integrations.dtos.CoinsExecuteDtoRq;
 import ru.stepup.spring.coins.core.integrations.dtos.ProductDto;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProductIntegrationRestTemplate implements ProductIntegration {
     private final RestTemplate restTemplate;
@@ -27,7 +29,7 @@ public class ProductIntegrationRestTemplate implements ProductIntegration {
     }
 
     @Override
-    public List<ProductDto> products(Long userId) {
+    public ResponseEntity<List<ProductDto>> products(Long userId) {
         try {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -35,10 +37,14 @@ public class ProductIntegrationRestTemplate implements ProductIntegration {
                     httpHeaders
             );
 
-            ResponseEntity<List<ProductDto>> response = restTemplate.exchange("/products/filter?userId=" + userId
-                    , HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductDto>>(){});
+            Map<String, String> uriVariables = new HashMap<>();
+            uriVariables.put("userId", userId.toString());
+
+            ResponseEntity<List<ProductDto>> response = restTemplate.exchange("/products/filter?userId={userId}"
+                    , HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductDto>>() {}
+                    , uriVariables);
             logger.info("response: {}", response);
-            return response.getBody();
+            return response;
         } catch (IntegrationException e) {
             logger.info("error body: {}", e.getIntegrationErrorDto());
             return null;
@@ -55,9 +61,10 @@ public class ProductIntegrationRestTemplate implements ProductIntegration {
             );
 
             ResponseEntity<ProductDto> response = restTemplate.exchange("/products/" + id
-                    , HttpMethod.GET, null, new ParameterizedTypeReference<ProductDto>(){});
+                    , HttpMethod.GET, null, new ParameterizedTypeReference<ProductDto>() {
+                    });
             logger.info("response: {}", response);
-            if(response.getStatusCode().isError()) {
+            if (response.getStatusCode().isError()) {
                 throw new BadRequestException("Ошибка", "PRODUCT_ERROR");
             }
 
