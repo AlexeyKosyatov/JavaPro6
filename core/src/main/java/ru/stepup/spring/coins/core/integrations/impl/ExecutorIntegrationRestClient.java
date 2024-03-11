@@ -1,10 +1,11 @@
-package ru.stepup.spring.coins.core.integrations;
+package ru.stepup.spring.coins.core.integrations.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClient;
 import ru.stepup.spring.coins.core.api.ExecuteCoinsRequest;
 import ru.stepup.spring.coins.core.exceptions.IntegrationException;
+import ru.stepup.spring.coins.core.integrations.ExecutorIntegration;
 import ru.stepup.spring.coins.core.integrations.dtos.CoinsExecuteDtoRq;
 import ru.stepup.spring.coins.core.integrations.dtos.CoinsExecuteDtoRs;
 

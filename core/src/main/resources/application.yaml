@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8380
 
 spring:
   datasource:
@@ -38,5 +38,10 @@ integrations:
   executor:
     client:
       url: "http://localhost:8031/executor"
+      connect-timeout: 1s
+      read-timeout: 30s
+  product:
+    client:
+      url: "http://localhost:8381/api/v1"
       connect-timeout: 1s
       read-timeout: 30s

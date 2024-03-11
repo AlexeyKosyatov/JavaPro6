@@ -1,0 +1,10 @@
+server:
+  port: 8381
+
+
+database:
+  driver-class-name: ${DRIVER_CLASS_NAME:org.postgresql.Driver}
+  jdbc-url: ${JDBC_URL:jdbc:postgresql://localhost:5432/StepUp}
+  username: ${USER_NAME:postgres}
+  password: ${PASSWORD:1}
+  maximum-pool-size: ${MAXIMUM_POOL_SIZE:4}
