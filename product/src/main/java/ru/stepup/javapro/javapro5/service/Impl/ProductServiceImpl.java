@@ -1,23 +1,21 @@
 package ru.stepup.javapro.javapro5.service.Impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.stepup.javapro.javapro5.dto.ProductDto;
 import ru.stepup.javapro.javapro5.entity.ProductEntity;
-import ru.stepup.javapro.javapro5.repository.ProductDao;
+import ru.stepup.javapro.javapro5.repository.ProductRepository;
 import ru.stepup.javapro.javapro5.service.ProductService;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class ProductServiceImpl implements ProductService {
 
-    private ProductDao productDao;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    public void setProductDao(ProductDao productDao) {
-        this.productDao = productDao;
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -28,17 +26,17 @@ public class ProductServiceImpl implements ProductService {
                 productDto.getBalance(),
                 productDto.getType(),
                 productDto.getUserId());
-        productDao.create(productEntity);
+        productRepository.save(productEntity);
     }
 
     @Override
     public void deleteAll() {
-        productDao.deleteAll();
+        productRepository.deleteAll();
     }
 
     @Override
     public List<ProductDto> selectAllDtoByUserId(Long userId) {
-        return productDao.selectAllByUserId(userId)
+        return productRepository.findAllByUserId(userId)
                 .stream()
                 .map(productEntity -> new ProductDto(
                         productEntity.getId(),
@@ -51,14 +49,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto selectDtoById(Long id) {
-        var productEntity = productDao.selectById(id);
-        if(productEntity != null) {
+        var productEntity = productRepository.findById(id);
+        if(productEntity.isPresent()) {
             return new ProductDto(
-                    productEntity.getId(),
-                    productEntity.getAccountNumber(),
-                    productEntity.getBalance(),
-                    productEntity.getType(),
-                    productEntity.getUserId());
+                    productEntity.get().getId(),
+                    productEntity.get().getAccountNumber(),
+                    productEntity.get().getBalance(),
+                    productEntity.get().getType(),
+                    productEntity.get().getUserId());
         }
         else {
             throw new RuntimeException("Продукт не найден id = " + id);
@@ -67,17 +65,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductEntity> selectAllEntityByUserId(Long userId) {
-        return productDao.selectAllByUserId(userId);
+        return productRepository.findAllByUserId(userId);
     }
 
     @Override
     public Optional<ProductEntity> selectEntityById(Long id) {
-        return Optional.of(productDao.selectById(id));
+        return productRepository.findById(id);
     }
 
     @Override
     public void deleteById(Long id) {
-        productDao.deleteById(id);
+        productRepository.deleteById(id);
     }
 }
 
