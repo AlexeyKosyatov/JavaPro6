@@ -1,10 +1,13 @@
 package ru.stepup.spring.coins.core.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.stepup.spring.coins.core.api.ExecuteCoinsRequest;
 import ru.stepup.spring.coins.core.api.ExecuteCoinsResponse;
 import ru.stepup.spring.coins.core.exceptions.BadRequestException;
 import ru.stepup.spring.coins.core.configurations.properties.CoreProperties;
+import ru.stepup.spring.coins.core.integrations.dtos.ChangeRemainDto;
 
 import java.math.BigDecimal;
 
@@ -13,11 +16,14 @@ public class CoinsService {
     private final CoreProperties coreProperties;
     private final ExecutorService executorService;
     private final ProductService productService;
+    private final LimitService limitService;
+    private static final Logger logger = LoggerFactory.getLogger(CoinsService.class.getName());
 
-    public CoinsService(CoreProperties coreProperties, ExecutorService executorService, ProductService productService) {
+    public CoinsService(CoreProperties coreProperties, ExecutorService executorService, ProductService productService, LimitService limitService) {
         this.coreProperties = coreProperties;
         this.executorService = executorService;
         this.productService = productService;
+        this.limitService = limitService;
     }
 
     public ExecuteCoinsResponse execute(ExecuteCoinsRequest request) {
@@ -37,7 +43,38 @@ public class CoinsService {
             throw new BadRequestException("Отрицательный баланс", "LOW_BALANCE");
         }
 
-        ExecuteCoinsResponse response = executorService.execute(request);
+        ChangeRemainDto changeRemainDto;
+
+        try {
+            changeRemainDto = limitService.changeRemain(product.getUserId(), request.sum()).getBody();
+        }
+        catch(Exception e) {
+            throw new BadRequestException("Не удалось уменьшить лимит" + e.getMessage(), "BAD_INTEGRATION");
+        }
+
+        assert changeRemainDto != null;
+        if(!"00".equals(changeRemainDto.getCode())) {
+            throw new BadRequestException("Превышен дневной лимит", "OUT_LIMIT");
+        }
+
+        ExecuteCoinsResponse response = null;
+
+        try {
+            response = executorService.execute(request);
+        }
+        catch(Exception e) {
+            logger.error("execute: {}", e.getMessage());
+            try {
+                limitService.changeRemain(product.getUserId(), request.sum().negate()).getBody();
+            }
+            catch(Exception e1) {
+                logger.error("Не удалось восстановить лимит после ошибки выполнения: {}, {}"
+                        , e1.getMessage(), e.getMessage());
+                throw new BadRequestException(e.getMessage() + ", " + e1.getMessage(), "BAD_INTEGRATION");
+            }
+            throw new BadRequestException(e.getMessage(), "BAD_INTEGRATION");
+        }
+
         return response;
     }
 }

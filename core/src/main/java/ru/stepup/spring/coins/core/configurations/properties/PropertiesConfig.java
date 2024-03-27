@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({
         CoreProperties.class,
         ExecutorProperties.class,
-        ProductProperties.class
+        ProductProperties.class,
+        LimitProperties.class
 })
 public class PropertiesConfig {
 }
