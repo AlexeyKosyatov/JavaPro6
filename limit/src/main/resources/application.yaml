@@ -1,0 +1,35 @@
+server:
+  port: 8382
+
+database:
+  driver-class-name: org.postgresql.Driver
+  jdbc-url: jdbc:postgresql://localhost:5432/StepUp
+  username: postgres
+  password: 1
+  maximum-pool-size: 4
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/StepUp}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:1}
+    maximum-pool-size: ${DATASOURCE_POOL_SIZE:4}
+    hikari:
+      schema: ${DATASOURCE_SCHEMA_NAME:public}
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        default_schema: public
+        format_sql: true
+
+limit:
+  params:
+    default-limit: 10000
+    cron: ${CRON:0 0 0 * * *}
