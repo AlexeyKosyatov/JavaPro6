@@ -8,6 +8,7 @@ import ru.stepup.spring.coins.core.api.ExecuteCoinsResponse;
 import ru.stepup.spring.coins.core.exceptions.BadRequestException;
 import ru.stepup.spring.coins.core.configurations.properties.CoreProperties;
 import ru.stepup.spring.coins.core.integrations.dtos.ChangeRemainDto;
+import ru.stepup.spring.coins.core.services.impl.LimitServiceImpl;
 
 import java.math.BigDecimal;
 
@@ -19,7 +20,7 @@ public class CoinsService {
     private final LimitService limitService;
     private static final Logger logger = LoggerFactory.getLogger(CoinsService.class.getName());
 
-    public CoinsService(CoreProperties coreProperties, ExecutorService executorService, ProductService productService, LimitService limitService) {
+    public CoinsService(CoreProperties coreProperties, ExecutorService executorService, ProductService productService, LimitServiceImpl limitService) {
         this.coreProperties = coreProperties;
         this.executorService = executorService;
         this.productService = productService;
@@ -43,17 +44,10 @@ public class CoinsService {
             throw new BadRequestException("Отрицательный баланс", "LOW_BALANCE");
         }
 
-        ChangeRemainDto changeRemainDto;
-
-        try {
-            changeRemainDto = limitService.changeRemain(product.getUserId(), request.sum()).getBody();
-        }
-        catch(Exception e) {
-            throw new BadRequestException("Не удалось уменьшить лимит" + e.getMessage(), "BAD_INTEGRATION");
-        }
+        ChangeRemainDto changeRemainDto = limitService.changeRemain(product.getUserId(), request.sum());
 
         assert changeRemainDto != null;
-        if(!"00".equals(changeRemainDto.getCode())) {
+        if(changeRemainDto.getCode() == ChangeRemainDto.ChangeRemainCode.CODE_NO) {
             throw new BadRequestException("Превышен дневной лимит", "OUT_LIMIT");
         }
 
@@ -65,7 +59,7 @@ public class CoinsService {
         catch(Exception e) {
             logger.error("execute: {}", e.getMessage());
             try {
-                limitService.changeRemain(product.getUserId(), request.sum().negate()).getBody();
+                limitService.changeRemain(product.getUserId(), request.sum().negate());
             }
             catch(Exception e1) {
                 logger.error("Не удалось восстановить лимит после ошибки выполнения: {}, {}"

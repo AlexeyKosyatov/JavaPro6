@@ -24,28 +24,16 @@ public class LimitServiceImpl implements LimitService {
     @Override
     @Transactional
     public ChangeRemainDto changeRemain(Long userId, BigDecimal sum) {
-        var entityOpt = limitRepository.findFirstByUserId(userId);
+        var entity = limitRepository.findFirstByUserId(userId)
+                .orElse(new LimitEntity(paramService.getDefaultLimit(), userId));
 
-        LimitEntity entity;
-        if(entityOpt.isPresent()) {
-            entity = entityOpt.get();
-        } else {
-            entity = new LimitEntity();
-            entity.setUserId(userId);
-            entity.setRemainSum(paramService.getDefaultLimit());
+        if (entity.getRemainSum().compareTo(sum) < 0) {
+            return new ChangeRemainDto(ChangeRemainDto.ChangeRemainCode.CODE_NO);
         }
 
-        if(entity.getRemainSum().compareTo(sum) < 0) {
-            return new ChangeRemainDto("01");
-        }
-        else {
-            entity.setRemainSum(entity.getRemainSum().add(sum.negate()));
-            limitRepository.save(entity);
-            return new ChangeRemainDto("00");
-        }
-
-
-
+        entity.setRemainSum(entity.getRemainSum().add(sum.negate()));
+        limitRepository.save(entity);
+        return new ChangeRemainDto(ChangeRemainDto.ChangeRemainCode.CODE_OK);
     }
 
     @Override

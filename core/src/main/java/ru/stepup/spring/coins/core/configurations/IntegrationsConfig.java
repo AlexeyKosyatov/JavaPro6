@@ -13,7 +13,7 @@ import ru.stepup.spring.coins.core.integrations.LimitIntegration;
 import ru.stepup.spring.coins.core.integrations.ProductIntegration;
 import ru.stepup.spring.coins.core.integrations.impl.ExecutorIntegrationRestTemplate;
 import ru.stepup.spring.coins.core.configurations.properties.ExecutorProperties;
-import ru.stepup.spring.coins.core.integrations.impl.LimitIntegrationRestTemplate;
+import ru.stepup.spring.coins.core.integrations.impl.LimitIntegrationImpl;
 import ru.stepup.spring.coins.core.integrations.impl.ProductIntegrationRestTemplate;
 
 @Configuration
@@ -58,7 +58,7 @@ public class IntegrationsConfig {
                 .setReadTimeout(limitProperties.getClient().getReadTimeout())
                 .errorHandler(restTemplateResponseErrorHandler)
                 .build();
-        return new LimitIntegrationRestTemplate(restTemplate);
+        return new LimitIntegrationImpl(restTemplate);
     }
 
 }

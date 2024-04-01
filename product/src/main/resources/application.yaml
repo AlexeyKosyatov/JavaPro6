@@ -5,7 +5,7 @@ database:
   driver-class-name: org.postgresql.Driver
   jdbc-url: jdbc:postgresql://localhost:5432/StepUp
   username: postgres
-  password: 1
+  password: postgres
   maximum-pool-size: 4
 
 spring:
@@ -13,10 +13,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/StepUp}
     username: ${DATASOURCE_USERNAME:postgres}
-    password: ${DATASOURCE_PASSWORD:1}
+    password: ${DATASOURCE_PASSWORD:postgres}
     maximum-pool-size: ${DATASOURCE_POOL_SIZE:4}
     hikari:
-      schema: ${DATASOURCE_SCHEMA_NAME:intr_qualification}
+      schema: ${DATASOURCE_SCHEMA_NAME:public}
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect

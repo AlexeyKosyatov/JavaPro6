@@ -14,6 +14,11 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "limits")
 public class LimitEntity {
+    public LimitEntity(BigDecimal remainSum, Long userId) {
+        this.remainSum = remainSum;
+        this.userId = userId;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,4 +26,8 @@ public class LimitEntity {
     private BigDecimal remainSum;
     @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    public LimitEntity() {
+
+    }
 }

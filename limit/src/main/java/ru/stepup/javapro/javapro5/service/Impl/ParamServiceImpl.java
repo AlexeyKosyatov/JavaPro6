@@ -16,7 +16,7 @@ public class ParamServiceImpl implements ParamService {
     private final ParamRepository paramRepository;
     @Value("${limit.params.default-limit}")
     private BigDecimal defaultLimit;
-    private static final String limitCode = "limit";
+    private static final String LIMIT_CODE = "limit";
 
     public ParamServiceImpl(ParamRepository paramRepository) {
         this.paramRepository = paramRepository;
@@ -25,20 +25,13 @@ public class ParamServiceImpl implements ParamService {
     @Override
     @Transactional
     public void setDefaultLimit(BigDecimal limit) throws BadRequestException {
-        if (BigDecimal.valueOf(0).compareTo(limit) >= 0 ) {
+        if (BigDecimal.valueOf(0).compareTo(limit) >= 0) {
             throw new BadRequestException("Нельзя установить отрицательный лимит");
         }
 
-        var entityOpt = paramRepository.findFirstByCode(limitCode);
-
-        ParamEntity entity;
-        if(entityOpt.isPresent()) {
-            entity = entityOpt.get();
-        } else {
-            entity = new ParamEntity();
-            entity.setCode(limitCode);
-        }
-
+        var entity = paramRepository.findFirstByCode(LIMIT_CODE)
+                .orElse(new ParamEntity());
+        entity.setCode(LIMIT_CODE);
         entity.setValue(limit);
 
         paramRepository.save(entity);
@@ -46,12 +39,9 @@ public class ParamServiceImpl implements ParamService {
 
     @Override
     public BigDecimal getDefaultLimit() {
-        var entityOpt = paramRepository.findFirstByCode(limitCode);
-        if(entityOpt.isPresent()) {
-            return entityOpt.get().getValue();
-        }
-
-        return defaultLimit;
+        return paramRepository.findFirstByCode(LIMIT_CODE)
+                .map(ParamEntity::getValue)
+                .orElse(defaultLimit);
     }
 }
 

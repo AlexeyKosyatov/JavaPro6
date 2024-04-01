@@ -1,8 +1,8 @@
 package ru.stepup.javapro.javapro5.rest;
 
 import org.apache.coyote.BadRequestException;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,9 +24,9 @@ public class LimitController {
         this.paramService = paramService;
     }
 
-    @GetMapping("/change-remain")
+    @PutMapping("/limit/change-remain")
     public ChangeRemainDto checkRemain(
-            @RequestParam Long userId, @RequestParam BigDecimal sum
+            @RequestHeader Long userId, @RequestParam BigDecimal sum
     ) {
         return limitService.changeRemain(userId, sum);
     }
