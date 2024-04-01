@@ -1,11 +1,11 @@
 server:
-  port: 8381
+  port: 8382
 
 database:
   driver-class-name: org.postgresql.Driver
   jdbc-url: jdbc:postgresql://localhost:5432/StepUp
   username: postgres
-  password: postgres
+  password: 1
   maximum-pool-size: 4
 
 spring:
@@ -28,3 +28,8 @@ spring:
       hibernate:
         default_schema: public
         format_sql: true
+
+limit:
+  params:
+    default-limit: 10000
+    cron: ${CRON:0 0 0 * * *}
